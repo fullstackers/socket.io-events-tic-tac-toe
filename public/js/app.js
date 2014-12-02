@@ -50,7 +50,7 @@
         $('.team-'+team).find('button').removeClass('hide');
     });
 
-    socket.on('player selects tile', function(team, tile) {
+    socket.on('specator on team chose tile', function(spectator, team, tile) {
         $('#'+tile).html(team);
     });
 
