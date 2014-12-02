@@ -23,7 +23,16 @@ var io = require('socket.io')(server)
  * The game data
  */
 
-var game = { team: { x: null, o: null } };
+var game = { 
+  team: { 
+    x: null, o: null 
+  },
+  tiles: {
+    'top-left': null, 'top-middle': null, 'top-right': null,
+    'middle-left': null, 'middle': null, 'middle-right': null,
+    'bottom-left': null, 'bottom-middle': null, 'bottom-right': null
+  }
+};
 
 /*
  * create the router for the game, this is where our game logic lives
@@ -50,11 +59,17 @@ router.on('connection', function (sock, args, next) {
 // TODO 'spectator wants to play as team' will get converted to /spectator wants to play as team/
 // instead of /^spectator wants to play as team$/ NOTE possible major version bump
 router.on('spectator wants to play as team', function (sock, args) {
+  
+  /*
+   * given the team
+   */
+
   var team = args.pop();
 
   /*
    * and the team is not a valid team
    */
+
   if (!(team in game.team)) {
     
     /*
@@ -116,6 +131,64 @@ router.on('spectator wants to play as team', function (sock, args) {
 });
 
 /*
+ * when a player selects a game tile
+ */
+
+router.on('player selects tile', function (sock, args, next) {
+
+  /*
+   * given the tile
+   */
+
+  var tile = args.pop();
+
+  /*
+   * and the spectator is not the player
+   */
+
+  if (!sock.sock.playing.team || game.team[sock.sock.playing.team] !== sock.id) {
+
+    /*
+     * then tell the specatator they can't make that move
+     */
+
+    return sock.emit('spectator can\'t select tile if not playing', tile);
+
+  }
+
+  /*
+   * and the tile is not valid
+   */
+
+  if (!(tile in game.tiles) || game.tiles[tile] !== null) {
+
+    /*
+     * then tell the spectator that is an invalid tile
+     */
+
+    return sock.emit('spectactor selected an invalid tile', tile);
+
+  }
+
+  /*
+   * then update tile with the appropriate team's mark
+   */
+
+  game.tiles[tile] = sock.sock.playing.team;
+
+  /*
+   * and tell the sockets the spectator playing the team chose the tile
+   */
+
+  io.emit('specator on team chose tile', sock.id, sock.sock.playing.team, tile);
+
+  // TODO check if the game is over, win/draw
+
+  next();
+
+});
+
+/*
  * attach the events router to the game
  */
 
@@ -155,16 +228,15 @@ io.on('connection', function (sock) {
       game.team[sock.playing.team] = null; 
 
       /*
-       * and clear the flag that tells the player is playing the team
-       */
-
-      sock.playing.team = null;
-
-      /*
        * and tell the other players no one is playing on that team
        */
 
       sock.broadcast.emit('no one is playing for team', sock.playing.team);
+
+      /*
+       * and clear the flag that tells the player is playing the team
+       */
+      sock.playing.team = null;
 
     }
 
