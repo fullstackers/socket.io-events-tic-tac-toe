@@ -17,6 +17,12 @@
         console.log('connected!', gameState);
         setTeam(gameState.team.x, 'x');
         setTeam(gameState.team.o, 'o');
+
+        for(var i in gameState.tiles) {
+            if(gamesState.tiles.hasOwnProperty(i) && gameState.tiles[i]) {
+                 $('#'+i).html(gameState.tiles[i]);
+            }
+        }
     });
 
     socket.on('spectator joined', function(spectator) {
@@ -38,6 +44,7 @@
     });
 
     socket.on('no one is playing for team', function(team) {
+    console.log('no one is playing for team', team);
         setTeam(null, team);
         $('.team-'+team).find('h5').html("Seat Empty");
         $('.team-'+team).find('button').removeClass('hide');
