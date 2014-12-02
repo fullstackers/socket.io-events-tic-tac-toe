@@ -69,7 +69,7 @@ router.on('spectator wants to play as team', function (sock, args) {
      * then the spectator can't play as team
      */
 
-    return sock.emit('specator can\'t play as team', team);
+    return sock.emit('spectator can\'t play as team', team);
 
   }
 
