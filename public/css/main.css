@@ -1,3 +1,16 @@
+.team {
+    background-color: silver;
+    border: 2px solid green;
+    padding: 0;
+    text-align: center;
+}
+
+.team h4 {
+    background-color: white;
+    border-radius: 5px;
+    margin: 0;
+}
+
 .teamX {
     float: left;
 }
@@ -6,19 +19,25 @@
     float: right;
 }
 
-.game-board {
+#game-board {
+    border: 2px solid green;
+    border-radius: 5px;
     background-color: silver;
-    margin: auto;
+    margin: 100px auto 0;
+    width: 320px;
 }
 
 .tile {
+    display: inline-block;
     font-size: 32px;
     font-weight: bold;
     height: 100px;
     width: 100px;
 }
 
-.event-log {
+#event-log {
+    list-style-type: none;
     margin: auto;
+    padding: 10px;
     width: 300px;
 }

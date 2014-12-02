@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/app.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
-  </head>
-  <body>
-     <div class="teamX">
-         <button>Join Team X</button>
-     </div>
-     <div class="teamY">
-         <button>Join Team Y</button>
-     </div>
-     <div id="game-board">
-       <div class="tile top-left"></div>
-       <div class="tile top-middle"></div>
-       <div class="tile top-right"></div>
-       <div class="tile middle-left"></div>
-       <div class="tile middle"></div>
-       <div class="tile middle-right"></div>
-       <div class="tile bottom-left"></div>
-       <div class="tile bottom-middle"></div>
-       <div class="tile bottom-right"></div>
-     </div>
-     <ul id="event-log"></ul>
-  </body>
+    <head>
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/app.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    </head>
+    <body>
+        <div class="team teamX">
+            <h4>Team X</h4>
+            <h5 class="player">Seat Empty</h5>
+            <button class="join">Join Team X</button>
+        </div>
+        <div class="team teamY">
+            <h4>Team O</h4>
+            <h5 class="player">Seat Empty</h5>
+            <button class="join">Join Team O</button>
+        </div>
+        <div id="game-board">
+            <div class="tile top-left"></div>
+            <div class="tile top-middle"></div>
+            <div class="tile top-right"></div>
+            <div class="tile middle-left"></div>
+            <div class="tile middle"></div>
+            <div class="tile middle-right"></div>
+            <div class="tile bottom-left"></div>
+            <div class="tile bottom-middle"></div>
+            <div class="tile bottom-right"></div>
+        </div>
+        <ul id="event-log"></ul>
+    </body>
 </html>
