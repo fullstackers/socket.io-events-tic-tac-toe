@@ -31,15 +31,19 @@
     border: 2px solid green;
     border-radius: 5px;
     background-color: silver;
-    margin: 100px auto 0;
+    margin: 30px auto 0;
     width: 312px;
 }
 
 #event-log {
+    border: 1px solid silver;
+    border-radius: 5px;
     list-style-type: none;
-    margin: auto;
+    height: 150px;
+    margin: 10px auto 0;
+    overflow: auto;
     padding: 10px;
-    width: 300px;
+    width: 500px;
 }
 
 .tile {

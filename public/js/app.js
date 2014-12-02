@@ -7,7 +7,7 @@
     });
 
     socket.on('spectator joined', function(spectator) {
-      $('#event-log').append('<li>Specator <em>'+spectator+'</em> joined</li>');
+      $('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
     });
 
     socket.on('spectator left', function(spectator) {
