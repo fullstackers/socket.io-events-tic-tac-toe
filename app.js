@@ -43,7 +43,6 @@ router.on('connection', function (sock, args, next) {
   });
 });
 
-
 router.on('spectator wants to play as team', function (sock, args) {
   var team = args.pop();
 
@@ -85,6 +84,7 @@ router.on('spectator wants to play as team', function (sock, args) {
    */
 
   io.emit('spectator is playing as team', sock.id, team);
+
 });
 
 /*
