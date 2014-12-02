@@ -26,19 +26,31 @@ var router = require('socket.io-events')();
 var io = require('socket.io')(server)
 
 /*
+ * create the channel that our specators will be on
+ */
+
+var game = io.of('/');
+
+/*
  * whenever we get a connection we will let everyone know one joined the room
  */
 
-io.on('connection', function (sock) {
-  io.emit('spectator joined', sock.id);
-});
+game.on('connection', function (sock) {
 
-/*
- * whenever we loose a connection we will let everyone know one left the room
- */
+  /*
+   * whenever we disconnect we will let everyone know this spectator left
+   */
 
-io.on('disconect', function (sock) {
-  io.emit('specator left', sock.id);
+  sock.on('disconnect', function () {
+    sock.broadcast.emit('spectator left', sock.id);
+  });
+
+  /*
+   * let everyone know we a new spectator joined the game
+   */
+
+  game.emit('spectator joined', sock.id);
+
 });
 
 /*
@@ -48,8 +60,7 @@ io.on('disconect', function (sock) {
 io.use(router);
 
 /*
- * Use sticky-session, which will help us out with our process clustering, to have the server start
- * listening on the applications configured port.
+ * have the server listen on the app's configured port
  */
 
-require('sticky-session')(server).listen(app.get('port'));
+server.listen(app.get('port'));
