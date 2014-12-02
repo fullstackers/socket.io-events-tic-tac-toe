@@ -32,7 +32,8 @@ var io = require('socket.io')(server)
 io.use(router);
 
 /*
- * have the server start listening
+ * Use sticky-session, which will help us out with our process clustering, to have the server start
+ * listening on the applications configured port.
  */
 
-server.listen(app.get('port'));
+require('sticky-session')(server).listen(app.get('port'));
