@@ -36,13 +36,17 @@ router.on(function (sock, args, next) {
   next();
 });
 
+/*
 router.on('connection', function (sock, args, next) {
   io.emit('spectator joined', sock.id);
   sock.on('disconnect', function () {
     sock.broadcast('spectator left', sock.id);
   });
 });
+*/
 
+// TODO 'spectator wants to play as team' will get converted to /spectator wants to play as team/
+// instead of /^spectator wants to play as team$/ NOTE possible major version bump
 router.on('spectator wants to play as team', function (sock, args) {
   var team = args.pop();
 
@@ -80,6 +84,13 @@ router.on('spectator wants to play as team', function (sock, args) {
   game.team[team] = sock.id;
 
   /*
+   * And tell the specator we are playing as the team
+   */
+
+  // TODO we need to be able to reference the value on that socket without going to sock.sock
+  sock.sock.playing.team = team;
+
+  /*
    * And tell the spectators the player is playing as the given team
    */
 
@@ -111,6 +122,7 @@ io.on('connection', function (sock) {
     /*
      * then tell the other specators this spectator has left
      */
+
     sock.broadcast.emit('spectator left', sock.id);
 
     /*
@@ -120,10 +132,16 @@ io.on('connection', function (sock) {
     if (sock.playing.team) {
 
       /*
-       * then clear the game
+       * then clear the player from the team
        */
 
       game.team[sock.playing.team] = null; 
+
+      /*
+       * and clear the flag that tells the player is playing the team
+       */
+
+      sock.playing.team = null;
 
       /*
        * and tell the other players no one is playing on that team
@@ -132,20 +150,6 @@ io.on('connection', function (sock) {
       sock.broadcast.emit('no one is playing for team', sock.playing.team);
 
     }
-
-
-  });
-
-
-  /*
-   * whenever we disconnect and we are playing on a team
-   */
-
-  sock.on('disconnect', function () {
-
-    /*
-     * then clear the player from the game's team
-     */
 
   });
 
