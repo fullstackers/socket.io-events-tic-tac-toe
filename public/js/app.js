@@ -13,10 +13,10 @@
         }
     }
 
-    socket.on('connect', function(gameState) {
-        console.log('connected!');
-        setTeam('x', gameState.team.x);
-        setTeam('y', gameState.team.y);
+    socket.on('current game state', function(gameState) {
+        console.log('connected!', gameState);
+        setTeam(gameState.team.x, 'x');
+        setTeam(gameState.team.o, 'o');
     });
 
     socket.on('spectator joined', function(spectator) {
