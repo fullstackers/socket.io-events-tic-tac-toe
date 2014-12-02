@@ -19,6 +19,11 @@ var server = require('http').Server(app);
 
 var router = require('socket.io-events')();
 
+router.on('connection', function (sock) {
+  console.log(sock.id);
+  sock.emit('joined game', null);
+});
+
 /*
  * create our socket.io instance
  */
