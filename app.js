@@ -19,16 +19,27 @@ var server = require('http').Server(app);
 
 var router = require('socket.io-events')();
 
-router.on('connection', function (sock) {
-  console.log(sock.id);
-  sock.emit('joined game', null);
-});
-
 /*
  * create our socket.io instance
  */
 
 var io = require('socket.io')(server)
+
+/*
+ * whenever we get a connection we will let everyone know one joined the room
+ */
+
+io.on('connection', function (sock) {
+  io.emit('spectator joined', sock.id);
+});
+
+/*
+ * whenever we loose a connection we will let everyone know one left the room
+ */
+
+io.on('disconect', function (sock) {
+  io.emit('specator left', sock.id);
+});
 
 /*
  * attach the router to the socket.io app
