@@ -14,9 +14,9 @@
       $('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
     });
 
-    socket.on('spectator can\'t play as team', function(spectator, team) {
-      console.log('you can\'t play as team', spectator, team);
-      $('#event-log').append('<li>There is already a player for team <em>'+team+'</em></li>');
+    socket.on('spectator can\'t play as team', function(team) {
+      console.log('you can\'t play as team', team);
+      $('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
     });
 
     socket.on('spectator is playing as team', function(spectator, team) {
@@ -30,9 +30,8 @@
        $('.team-'+team).find('button').removeClass('hide');
     });
 
-    socket.on('player selects tile', function(data) {
-        //$('#'+data.tile)
-
+    socket.on('player selects tile', function(team, tile) {
+        $('#'+tile).html(team);
     });
 
     $(document).ready(function() {
