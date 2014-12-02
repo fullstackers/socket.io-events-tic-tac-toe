@@ -18,9 +18,10 @@
       $('#event-log').append('<li>There is already a player for team <em>'+team+'</em></li>');
     });
 
-    socket.on('spectator is playing as team', function(data) {
-        $('.'+data).find('h5')[0].innerHTML = "Player: "+data;
-        $('.'+data).find('button').addClass('hide');
+    socket.on('spectator is playing as team', function(spectator, team) {
+    console.log('spectator is playing as team', team);
+        $('.team-'+team).find('h5').html("Player: "+spectator);
+        $('.team-'+team).find('button').addClass('hide');
     });
 
     socket.on('player selects tile', function(data) {
