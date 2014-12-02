@@ -1,1 +1,29 @@
-<h1>Hello</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/app.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+  </head>
+  <body>
+     <div class="teamX">
+         <button>Join Team X</button>
+     </div>
+     <div class="teamY">
+         <button>Join Team Y</button>
+     </div>
+     <div id="game-board">
+       <div class="tile top-left"></div>
+       <div class="tile top-middle"></div>
+       <div class="tile top-right"></div>
+       <div class="tile middle-left"></div>
+       <div class="tile middle"></div>
+       <div class="tile middle-right"></div>
+       <div class="tile bottom-left"></div>
+       <div class="tile bottom-middle"></div>
+       <div class="tile bottom-right"></div>
+     </div>
+     <ul id="event-log"></ul>
+  </body>
+</html>

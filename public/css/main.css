@@ -1,0 +1,24 @@
+.teamX {
+    float: left;
+}
+
+.teamY {
+    float: right;
+}
+
+.game-board {
+    background-color: silver;
+    margin: auto;
+}
+
+.tile {
+    font-size: 32px;
+    font-weight: bold;
+    height: 100px;
+    width: 100px;
+}
+
+.event-log {
+    margin: auto;
+    width: 300px;
+}
