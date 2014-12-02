@@ -19,7 +19,7 @@
         setTeam(gameState.team.o, 'o');
 
         for(var i in gameState.tiles) {
-            if(gamesState.tiles.hasOwnProperty(i) && gameState.tiles[i]) {
+            if(gameState.tiles.hasOwnProperty(i) && gameState.tiles[i]) {
                  $('#'+i).html(gameState.tiles[i]);
             }
         }
