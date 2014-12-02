@@ -68,6 +68,21 @@ router.on('spectator wants to play as team', function (sock, args) {
    */
 
   if (game.team[team]) {
+
+
+    /*
+     * and the the player is already on the team
+     */
+
+    if (game.team[team] === sock.id) {
+
+      /*
+       * then the socket is already playing the game
+       */
+
+      return sock.emit('spectator already playing on team', x);
+
+    }
     
     /*
      * then the spectator can't play as team
