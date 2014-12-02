@@ -1,0 +1,32 @@
+{
+  "name": "socket.io-events-tic-tac-toe",
+  "version": "0.0.0",
+  "description": "Tic Tac Toe built with Socket.IO and Socket.IO Events",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turbonetix/socket.io-events-tic-tac-toe"
+  },
+  "keywords": [
+    "socket.io",
+    "events",
+    "tic",
+    "tac",
+    "toe",
+    "game",
+    "demo"
+  ],
+  "author": "support@turbonetix.io",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/turbonetix/socket.io-events-tic-tac-toe/issues"
+  },
+  "homepage": "https://github.com/turbonetix/socket.io-events-tic-tac-toe",
+  "dependencies": {
+    "express": "^4.10.4",
+    "socket.io-events": "^0.4.6"
+  }
+}
