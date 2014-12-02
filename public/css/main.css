@@ -50,20 +50,20 @@
     width: 100px;
 }
 
-.tile.top-left,
-.tile.top-middle,
-.tile.middle-left,
-.tile.middle {
+#top-left,
+#top-middle,
+#middle-left,
+#middle {
     border-right: 2px solid black;
     border-bottom: 2px solid black;
 }
 
-.tile.bottom-left,
-.tile.bottom-middle {
+#bottom-left,
+#bottom-middle {
     border-right: 2px solid black;
 }
 
-.tile.top-right,
-.tile.middle-right {
+#top-right,
+#middle-right {
     border-bottom: 2px solid black;
 }

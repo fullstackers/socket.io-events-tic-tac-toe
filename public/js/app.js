@@ -19,10 +19,20 @@
         $('.'+data).find('button').addClass('hide');
     });
 
+    socket.on('player selects tile', function(data) {
+        //$('#'+data.tile)
+
+    });
+
     $(document).ready(function() {
         $('.team').find('button').click(function(e) {
-        console.log('test', e.target.value);
+            console.log('when spectator wants to play as team', e.target.value);
             socket.emit('when spectator wants to play as team', e.target.value);
+        });
+
+        $('.tile').click(function(e) {
+            console.log('player selects tile', e.target.id);
+            socket.emit('player selects tile', e.target.id);
         });
     });
 })();
