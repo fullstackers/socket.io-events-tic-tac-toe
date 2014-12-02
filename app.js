@@ -14,50 +14,148 @@ app.use(express.static(__dirname+'/public'));
 var server = require('http').Server(app);
 
 /*
- * create the router for the game, this is where our game logic lives
- */
-
-var router = require('socket.io-events')();
-
-/*
  * create our socket.io instance
  */
 
 var io = require('socket.io')(server)
 
 /*
- * create the channel that our specators will be on
+ * The game data
  */
 
-var game = io.of('/');
+var game = { team: { x: null, o: null } };
+
+/*
+ * create the router for the game, this is where our game logic lives
+ */
+
+var router = require('socket.io-events')();
+
+router.on(function (sock, args, next) {
+  console.log('sock', sock.id, 'args', args);
+  next();
+});
+
+router.on('connection', function (sock, args, next) {
+  io.emit('spectator joined', sock.id);
+  sock.on('disconnect', function () {
+    sock.broadcast('spectator left', sock.id);
+  });
+});
+
+
+router.on('spectator wants to play as team', function (sock, args) {
+  var team = args.pop();
+
+  /*
+   * and the team is not a valid team
+   */
+  if (!(team in game.team)) {
+    
+    /*
+     * then team does not exist
+     */
+
+    return sock.emit('team does not exist', team);
+
+  }
+
+  /*
+   * and the team is already taken
+   */
+
+  if (game.team[team]) {
+    
+    /*
+     * then the spectator can't play as team
+     */
+
+    return sock.emit('specator can\'t play as team', team);
+
+  }
+
+  /* 
+   * Then store that spectator as the player for the team
+   */
+
+  game.team[team] = sock.id;
+
+  /*
+   * And tell the spectators the player is playing as the given team
+   */
+
+  io.emit('spectator is playing as team', sock.id, team);
+});
+
+/*
+ * attach the events router to the game
+ */
+
+io.use(router);
 
 /*
  * whenever we get a connection we will let everyone know one joined the room
  */
 
-game.on('connection', function (sock) {
+io.on('connection', function (sock) {
+
+
+  sock.playing = { team: null };
 
   /*
    * whenever we disconnect we will let everyone know this spectator left
    */
 
   sock.on('disconnect', function () {
+
+    /*
+     * then tell the other specators this spectator has left
+     */
     sock.broadcast.emit('spectator left', sock.id);
+
+    /*
+     * and we are playing on a team
+     */
+
+    if (sock.playing.team) {
+
+      /*
+       * then clear the game
+       */
+
+      game.team[sock.playing.team] = null; 
+
+      /*
+       * and tell the other players no one is playing on that team
+       */
+
+      sock.broadcast.emit('no one is playing for team', sock.playing.team);
+
+    }
+
+
+  });
+
+
+  /*
+   * whenever we disconnect and we are playing on a team
+   */
+
+  sock.on('disconnect', function () {
+
+    /*
+     * then clear the player from the game's team
+     */
+
   });
 
   /*
    * let everyone know we a new spectator joined the game
    */
 
-  game.emit('spectator joined', sock.id);
+  io.emit('spectator joined', sock.id);
 
 });
-
-/*
- * attach the router to the socket.io app
- */
-
-io.use(router);
 
 /*
  * have the server listen on the app's configured port

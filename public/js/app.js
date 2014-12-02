@@ -14,7 +14,11 @@
       $('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
     });
 
-    socket.on('when spectator wants to play as team', function(data) {
+    socket.on('spectator can\'t play as team', function(spectator, team) {
+      $('#event-log').append('<li>There is already a player for team <em>'+team+'</em></li>');
+    });
+
+    socket.on('spectator is playing as team', function(data) {
         $('.'+data).find('h5')[0].innerHTML = "Player: "+data;
         $('.'+data).find('button').addClass('hide');
     });
