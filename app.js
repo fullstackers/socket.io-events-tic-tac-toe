@@ -8,7 +8,31 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname+'/public'));
 
 /*
- * bind our application to an http server listening on the application's configured port
+ * bind our application to an http server 
  */
 
-require('http').Server(app).listen(app.get('port'));
+var server = require('http').Server(app);
+
+/*
+ * create the router for the game, this is where our game logic lives
+ */
+
+var router = require('socket.io-events')();
+
+/*
+ * create our socket.io instance
+ */
+
+var io = require('socket.io')(server)
+
+/*
+ * attach the router to the socket.io app
+ */
+
+io.use(router);
+
+/*
+ * have the server start listening
+ */
+
+server.listen(app.get('port'));
