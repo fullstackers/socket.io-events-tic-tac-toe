@@ -37,6 +37,8 @@ router.on(function (sock, args, next) {
 });
 
 /*
+// TODO "connection" and "disconnect" events are not being captured by the router.  We may need to
+// wrap the router and expose it in another object that extends socket.io
 router.on('connection', function (sock, args, next) {
   io.emit('spectator joined', sock.id);
   sock.on('disconnect', function () {
@@ -173,6 +175,12 @@ io.on('connection', function (sock) {
    */
 
   io.emit('spectator joined', sock.id);
+
+  /*
+   * give the current state of the game
+   */
+
+  sock.emit('current game state', game);
 
 });
 
