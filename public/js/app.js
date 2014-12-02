@@ -2,32 +2,52 @@
 
     var socket = io();
 
-    socket.on('connect', function() {
-        console.log('connected!');
+    function setTeam(spectator, team) {
+
+        if(spectator) {
+            $('.team-'+team).find('h5').html("Player: "+spectator);
+            $('.team-'+team).find('button').addClass('hide');
+        } else {
+            $('.team-'+team).find('h5').html("Seat Empty");
+            $('.team-'+team).find('button').removeClass('hide');
+        }
+    }
+
+    socket.on('current game state', function(gameState) {
+        console.log('connected!', gameState);
+        setTeam(gameState.team.x, 'x');
+        setTeam(gameState.team.o, 'o');
+
+        for(var i in gameState.tiles) {
+            if(gamesState.tiles.hasOwnProperty(i) && gameState.tiles[i]) {
+                 $('#'+i).html(gameState.tiles[i]);
+            }
+        }
     });
 
     socket.on('spectator joined', function(spectator) {
-      $('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
+        $('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
     });
 
     socket.on('spectator left', function(spectator) {
-      $('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
+        $('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
     });
 
     socket.on('spectator can\'t play as team', function(team) {
-      console.log('you can\'t play as team', team);
-      $('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
+        console.log('you can\'t play as team', team);
+        $('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
     });
 
     socket.on('spectator is playing as team', function(spectator, team) {
-      console.log('spectator is playing as team', team);
-      $('.team-'+team).find('h5').html("Player: "+spectator);
-      $('.team-'+team).find('button').addClass('hide');
+        console.log('spectator is playing as team', team);
+        setTeam(spectator, team);
     });
 
     socket.on('no one is playing for team', function(team) {
-       $('.team-'+team).find('h5').html("Seat Empty");
-       $('.team-'+team).find('button').removeClass('hide');
+    console.log('no one is playing for team', team);
+        setTeam(null, team);
+        $('.team-'+team).find('h5').html("Seat Empty");
+        $('.team-'+team).find('button').removeClass('hide');
     });
 
     socket.on('player selects tile', function(team, tile) {
