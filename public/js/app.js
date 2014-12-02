@@ -7,7 +7,7 @@
     });
 
     socket.on('spectator joined', function(spectator) {
-      $('#event-log').append('<li>Specator <em>'+spectator+'</em> joined</li>');
+      $('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
     });
 
     socket.on('spectator left', function(spectator) {
@@ -25,6 +25,11 @@
       $('.team-'+team).find('button').addClass('hide');
     });
 
+    socket.on('no one is playing for team', function(team) {
+       $('.team-'+team).find('h5').html("Seat Empty");
+       $('.team-'+team).find('button').removeClass('hide');
+    });
+
     socket.on('player selects tile', function(data) {
         //$('#'+data.tile)
 
@@ -32,8 +37,8 @@
 
     $(document).ready(function() {
         $('.team').find('button').click(function(e) {
-            console.log('when spectator wants to play as team', e.target.value);
-            socket.emit('when spectator wants to play as team', e.target.value);
+            console.log('spectator wants to play as team', e.target.value);
+            socket.emit('spectator wants to play as team', e.target.value);
         });
 
         $('.tile').click(function(e) {
