@@ -15,6 +15,7 @@
 
     socket.on('current game state', function(gameState) {
         console.log('connected!', gameState);
+        $('.tile').each(function () { $(this).html(''); });
         setTeam(gameState.team.x, 'x');
         setTeam(gameState.team.o, 'o');
 
@@ -50,12 +51,28 @@
         $('.team-'+team).find('button').removeClass('hide');
     });
 
-    socket.on('specator on team chose tile', function(spectator, team, tile) {
+    socket.on('spectator on team chose tile', function(spectator, team, tile) {
         $('#'+tile).html(team);
     });
 
     socket.on('spectator already playing for team', function (team) {
       console.log('you are already playing on team %s', team); 
+    });
+
+    socket.on('specator\'s team is out of turn', function () {
+      console.log('out of turn');
+    });
+
+    socket.on('team won', function (team) {
+      alert('team ' + team + ' won!');
+    });
+
+    socket.on('draw game', function () {
+      alert('draw game!');
+    });
+
+    socket.on('current team turn', function (team) {
+      alert('team ' + team + ' turn!');
     });
 
     $(document).ready(function() {

@@ -31,8 +31,50 @@ var game = {
     'top-left': null, 'top-middle': null, 'top-right': null,
     'middle-left': null, 'middle': null, 'middle-right': null,
     'bottom-left': null, 'bottom-middle': null, 'bottom-right': null
-  }
+  },
+  current_team_turn: 'x'
 };
+
+game.cells = function () {
+  return [ this.tiles['top-left'], this.tiles['top-middle'], this.tiles['top-right'],
+          this.tiles['middle-left'], this.tiles['middle'], this.tiles['middle-right'],
+          this.tiles['bottom-left'], this.tiles['bottom-middle'], this.tiles['bottom-right']];
+};
+
+game.winStates = function () {
+
+  if (!this.winStates.states) {
+
+    var cells = this.cells();
+
+    var states = [];
+
+    for (var i=0; i<3; i++) {
+      var vertical = [], horizontal = [];
+      for (var j=0; j<3; j++) {
+        vertical.push(i + j * 3);
+        horizontal.push(i * 3 + j);
+      }
+      states.push(horizontal);
+      states.push(vertical);
+    }
+
+    var down = [], up = [];
+    for (var j=0; j<3; j++) {
+      down.push((j * 3) + j);
+      up.push((-j * 3) + j + 6);
+    }
+    states.push(down);
+    states.push(up);
+
+    this.winStates.states = states;
+  }
+
+  return this.winStates.states;
+
+};
+
+console.log(game.winStates());
 
 /*
  * create the router for the game, this is where our game logic lives
@@ -84,8 +126,6 @@ router.on('spectator wants to play as team', function (sock, args) {
    * and the player isn't already playing for a team
    */
 
-  console.log('sock.sock.playing.team', sock.sock.playing.team);
-
   if (sock.sock.playing.team) {
 
     /*
@@ -136,6 +176,7 @@ router.on('spectator wants to play as team', function (sock, args) {
    */
 
   // TODO we need to be able to reference the value on that socket without going to sock.sock
+  // (a socket.io-events enhancement)
   sock.sock.playing.team = team;
 
   /*
@@ -159,7 +200,7 @@ router.on('player selects tile', function (sock, args, next) {
   var tile = args.pop();
 
   /*
-   * and the spectator is not the player
+   * and the spectator is playing a team
    */
 
   if (!sock.sock.playing.team || game.team[sock.sock.playing.team] !== sock.id) {
@@ -173,7 +214,24 @@ router.on('player selects tile', function (sock, args, next) {
   }
 
   /*
-   * and the tile is not valid
+   * and it is the specator's team current turn
+   */
+
+  console.log('current team turn %s, playing team %s', game.current_team_turn, sock.sock.playing.team);
+
+  if (game.current_team_turn !== sock.sock.playing.team) {
+
+    /*
+     * then tell the specator they can't play out of turn
+     */
+
+    return sock.emit('specator\'s team is out of turn');
+
+  }
+
+
+  /*
+   * and the tile is a valid tile and is not currenlty selected
    */
 
   if (!(tile in game.tiles) || game.tiles[tile] !== null) {
@@ -193,14 +251,83 @@ router.on('player selects tile', function (sock, args, next) {
   game.tiles[tile] = sock.sock.playing.team;
 
   /*
+   * and switch turns
+   */
+
+  if (sock.sock.playing.team === 'x') {
+    game.current_team_turn = 'o';
+  }
+  else {
+    game.current_team_turn = 'x';
+  }
+
+  /*
+   * and tell the sockets of the current teams turn
+   */
+
+  io.emit('current team turn', game.current_team_turn);
+
+  /*
    * and tell the sockets the spectator playing the team chose the tile
    */
 
-  io.emit('specator on team chose tile', sock.id, sock.sock.playing.team, tile);
+  io.emit('spectator on team chose tile', sock.id, sock.sock.playing.team, tile);
 
   // TODO check if the game is over, win/draw
+  
+  var cells = game.cells();
+  var winStates = game.winStates();
 
-  next();
+  /*
+   * and calcuate any winners
+   */
+
+  console.log('cells', cells);
+  console.log('winStates', winStates);
+
+  for (var k in winStates) {
+    var winState = winStates[k]
+    var xwin = 0, owin = 0;
+    for (var j=0; j<winState.length; j++) {
+      console.log('i %s, j %s %s', i, j, winState[j])
+      if (cells[winState[j]] === 'x') {
+        xwin++;
+      }
+      else if (cells[winState[j]] === 'o') {
+        owin++;
+      }
+    }
+    console.log('win state %j, x win %s o win %s', winState, xwin, owin);
+    if (xwin === 3) {
+      for (var k in game.tiles) game.tiles[k] = null;
+      game.current_team_turn = 'x';
+      io.emit('team won', 'x');
+      io.emit('current game state', game);
+      return;
+    }
+    else if (owin === 3) {
+      for (var k in game.tiles) game.tiles[k] = null;
+      game.current_team_turn = 'o';
+      io.emit('team won', 'o')
+      io.emit('current game state', game);
+      return;
+    }
+  }
+
+  /*
+   * and calculate a draw
+   */
+
+  for (var i=0; i<cells.length; i++) {
+    if (cells[i] == null) {
+      return;
+    }
+  }
+
+  for (var k in game.tiles) game.tiles[k] = null;
+  game.current_team_turn = 'x';
+  io.emit('draw game')
+  io.emit('current game state', game);
 
 });
 
