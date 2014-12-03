@@ -54,6 +54,10 @@
         $('#'+tile).html(team);
     });
 
+    socket.on('spectator already playing for team', function (team) {
+      console.log('you are already playing on team %s', team); 
+    });
+
     $(document).ready(function() {
         $('.team').find('button').click(function(e) {
             console.log('spectator wants to play as team', e.target.value);

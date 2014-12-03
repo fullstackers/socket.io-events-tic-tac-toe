@@ -81,6 +81,22 @@ router.on('spectator wants to play as team', function (sock, args) {
   }
 
   /*
+   * and the player isn't already playing for a team
+   */
+
+  console.log('sock.sock.playing.team', sock.sock.playing.team);
+
+  if (sock.sock.playing.team) {
+
+    /*
+     * then we can't play as both teams
+     */
+
+    return sock.emit('spectator already playing for team', sock.sock.playing.team);
+
+  }
+
+  /*
    * and the team is already taken
    */
 
@@ -236,6 +252,7 @@ io.on('connection', function (sock) {
       /*
        * and clear the flag that tells the player is playing the team
        */
+
       sock.playing.team = null;
 
     }
