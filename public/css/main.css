@@ -2,11 +2,16 @@
     display: none;
 }
 
+.header {
+    height: 100px;
+}
+
 .team {
     background-color: silver;
     border: 2px solid green;
     padding: 0;
     text-align: center;
+    width: 250px;
 }
 
 .team h4 {
@@ -35,6 +40,20 @@
 .team-o {
     float: right;
 }
+
+.title {
+    text-align: center;
+}
+
+#alert-modal {
+    padding: 20%;
+    position absolute;
+    top: 30%;
+    left: 30%;
+    border: 3px solid green;
+    border-radius: 4px;
+}
+
 
 #game-board {
     border: 2px solid green;
