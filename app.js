@@ -1,3 +1,4 @@
+var debug = require('debug')('app');
 /*
  * configure an express app to serve our static resources out of the /public directory
  */
@@ -41,9 +42,23 @@ game.cells = function () {
           this.tiles['bottom-left'], this.tiles['bottom-middle'], this.tiles['bottom-right']];
 };
 
-game.next = function () {
-  for (var k in this.tiles) this.tiles[k] = null;
+game.tick = function () {
+  this.switchTeams();
+  return this;
+};
+
+game.switchTeams = function () {
   this.current_team_turn = this.current_team_turn === 'x' ? 'o' : 'x';
+  return this;
+};
+
+game.clear = function () {
+  for (var k in this.tiles) this.tiles[k] = null;
+  return this;
+};
+
+game.reset = function () {
+  this.clear().switchTeams().tick();
   return this;
 };
 
@@ -80,7 +95,7 @@ game.winStates = function () {
 
 };
 
-console.log(game.winStates());
+debug('winStates', game.winStates());
 
 /*
  * create the router for the game, this is where our game logic lives
@@ -89,7 +104,7 @@ console.log(game.winStates());
 var router = require('socket.io-events')();
 
 router.on(function (sock, args, next) {
-  console.log('sock', sock.id, 'args', args);
+  debug('sock', sock.id, 'args', args);
   next();
 });
 
@@ -223,7 +238,7 @@ router.on('player selects tile', function (sock, args, next) {
    * and it is the specator's team current turn
    */
 
-  console.log('current team turn %s, playing team %s', game.current_team_turn, sock.sock.playing.team);
+  debug('current team turn %s, playing team %s', game.current_team_turn, sock.sock.playing.team);
 
   if (game.current_team_turn !== sock.sock.playing.team) {
 
@@ -259,12 +274,90 @@ router.on('player selects tile', function (sock, args, next) {
   /*
    * and switch turns
    */
+  /*
 
   if (sock.sock.playing.team === 'x') {
     game.current_team_turn = 'o';
   }
   else {
     game.current_team_turn = 'x';
+  }
+  */
+
+  /*
+   * and tell the sockets the spectator playing the team chose the tile
+   */
+
+  io.emit('spectator on team chose tile', sock.id, sock.sock.playing.team, tile);
+
+  /*
+   * and calcuate any winners
+   */
+  var cells = game.cells();
+  debug('cells init', cells);
+
+  
+  var winStates = game.winStates();
+  debug('winStates', winStates);
+
+  var wonStates = [];
+  for (var i=0; i<winStates.length; i++) {
+    var winState = winStates[i]
+    var xwin = 0, owin = 0, team = null;
+    for (var j=0; j<winState.length; j++) {
+      debug('i %s, j %s %s', i, j, winState[j])
+      if (cells[winState[j]] === 'x') {
+        xwin++;
+      }
+      else if (cells[winState[j]] === 'o') {
+        owin++;
+      }
+    }
+
+    debug('xwin', xwin, 'owin', owin);
+    if (xwin === 3) team = 'x';
+    else if (owin ===3) team = 'o';
+
+    debug('team', team);
+    if (team) wonStates.push({team: team, selection: winState});
+  }
+
+  debug('wonStates', wonStates);
+
+  if (wonStates.length) {
+
+    var selections = [], team = null;
+
+    for (var i=0; i<wonStates.length; i++) {
+      var wonState = wonStates[i];
+      debug('wonState', wonState);
+      if (!team) team = wonState.team;
+      selections.push(wonState.selection);
+    }
+
+    io.emit('team won', team, selections);
+
+    game.reset();
+  }
+  else {
+
+    /*
+     * and calculate a draw
+     */
+
+    var played = 0;
+    for (var i=0; i<cells.length; i++) {
+      if (cells[i] != null) {
+        played++;
+      }
+    }
+
+    var draw = (played == cells.length);
+    if (draw) {
+      io.emit('draw game');
+      game.reset();
+    }
+    else game.tick();
   }
 
   /*
@@ -274,77 +367,9 @@ router.on('player selects tile', function (sock, args, next) {
   io.emit('current team turn', game.current_team_turn);
 
   /*
-   * and tell the sockets the spectator playing the team chose the tile
+   * and tell the current game state
    */
-
-  io.emit('spectator on team chose tile', sock.id, sock.sock.playing.team, tile);
-
-  // TODO check if the game is over, win/draw
   
-  var cells = game.cells();
-  console.log('cells init', cells);
-  var winStates = game.winStates();
-
-  /*
-   * and calcuate any winners
-   */
-
-  console.log('cells', cells);
-  console.log('winStates', winStates);
-
-  var wonStates = [];
-  for (var i=0; i<winStates.length; i++) {
-    var winState = winStates[i]
-    var xwin = 0, owin = 0, team = null;
-    for (var j=0; j<winState.length; j++) {
-      console.log('i %s, j %s %s', i, j, winState[j])
-      if (cells[winState[j]] === 'x') {
-        xwin++;
-      }
-      else if (cells[winState[j]] === 'o') {
-        owin++;
-      }
-    }
-
-    console.log('xwin', xwin, 'owin', owin);
-    if (xwin === 3) team = 'x';
-    else if (owin ===3) team = 'o';
-
-    console.log('team', team);
-    if (team) wonStates.push({team: team, selection: winState});
-  }
-
-  console.log('wonStates', wonStates);
-
-  if (wonStates.length) {
-
-    var selections = [], team = null;
-
-    for (var i=0; i<wonStates.length; i++) {
-      var wonState = wonStates[i];
-      console.log('wonState', wonState);
-      if (!team) team = wonState.team;
-      selections.push(wonState.selection);
-    }
-
-    io.emit('team won', team, selections);
-  }
-  else {
-
-    /*
-     * and calculate a draw
-     */
-
-    for (var i=0; i<cells.length; i++) {
-      if (cells[i] == null) {
-        return;
-      }
-    }
-
-    io.emit('draw game')
-  }
-  
-  game.next();
   io.emit('current game state', game);
 
 });

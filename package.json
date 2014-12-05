@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/turbonetix/socket.io-events-tic-tac-toe",
   "dependencies": {
+    "debug": "^2.1.0",
     "express": "^4.10.4",
     "socket.io": "^1.2.1",
     "socket.io-events": "^0.4.6",
