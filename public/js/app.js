@@ -39,29 +39,22 @@
     });
 
     socket.on('spectator joined', function(spectator) {
-        //$('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
         logEvent('Spectator '+spectator+' joined');
     });
 
     socket.on('spectator left', function(spectator) {
-        //$('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
         logEvent('Spectator '+spectator+' left');
     });
 
     socket.on('spectator can\'t play as team', function(team) {
-        //console.log('you can\'t play as team', team);
-        //$('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
-
         logEvent('There is already a player for team '+team);
     });
 
     socket.on('spectator is playing as team', function(spectator, team) {
-        console.log('spectator is playing as team', team);
         setTeam(spectator, team);
     });
 
     socket.on('no one is playing for team', function(team) {
-    console.log('no one is playing for team', team);
         setTeam(null, team);
         $('.team-'+team).find('h5').html("Seat Empty");
         $('.team-'+team).find('button').removeClass('hide');
