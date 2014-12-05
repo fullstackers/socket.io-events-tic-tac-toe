@@ -282,6 +282,7 @@ router.on('player selects tile', function (sock, args, next) {
   // TODO check if the game is over, win/draw
   
   var cells = game.cells();
+  console.log('cells init', cells);
   var winStates = game.winStates();
 
   /*
@@ -292,8 +293,8 @@ router.on('player selects tile', function (sock, args, next) {
   console.log('winStates', winStates);
 
   var wonStates = [];
-  for (var k in winStates) {
-    var winState = winStates[k]
+  for (var i=0; i<winStates.length; i++) {
+    var winState = winStates[i]
     var xwin = 0, owin = 0, team = null;
     for (var j=0; j<winState.length; j++) {
       console.log('i %s, j %s %s', i, j, winState[j])
@@ -305,28 +306,15 @@ router.on('player selects tile', function (sock, args, next) {
       }
     }
 
+    console.log('xwin', xwin, 'owin', owin);
     if (xwin === 3) team = 'x';
     else if (owin ===3) team = 'o';
 
+    console.log('team', team);
     if (team) wonStates.push({team: team, selection: winState});
-    /*
-    console.log('win state %j, x win %s o win %s', winState, xwin, owin);
-    if (xwin === 3) {
-      for (var k in game.tiles) game.tiles[k] = null;
-      game.current_team_turn = 'x';
-      io.emit('team won', 'x');
-      io.emit('current game state', game);
-      return;
-    }
-    else if (owin === 3) {
-      for (var k in game.tiles) game.tiles[k] = null;
-      game.current_team_turn = 'o';
-      io.emit('team won', 'o')
-      io.emit('current game state', game);
-      return;
-    }
-    */
   }
+
+  console.log('wonStates', wonStates);
 
   if (wonStates.length) {
 
@@ -334,7 +322,8 @@ router.on('player selects tile', function (sock, args, next) {
 
     for (var i=0; i<wonStates.length; i++) {
       var wonState = wonStates[i];
-      if (!team) team = wonState[i];
+      console.log('wonState', wonState);
+      if (!team) team = wonState.team;
       selections.push(wonState.selection);
     }
 
