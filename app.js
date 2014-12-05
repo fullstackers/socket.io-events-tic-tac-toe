@@ -43,7 +43,7 @@ game.cells = function () {
 
 game.next = function () {
   for (var k in this.tiles) this.tiles[k] = null;
-  this.current_team_turn = this.current_team_turn === 'x' ? 'o' : '';
+  this.current_team_turn = this.current_team_turn === 'x' ? 'o' : 'x';
   return this;
 };
 
