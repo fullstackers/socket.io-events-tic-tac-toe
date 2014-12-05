@@ -1,13 +1,25 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
 .hide {
     display: none;
 }
 
 .header {
     height: 100px;
+    min-width: 800px;
 }
 
 .team {
-    background-color: silver;
+    background-color: #E6E6E6;
     border: 2px solid green;
     padding: 0;
     text-align: center;
@@ -25,7 +37,7 @@
 }
 
 .team.your-turn {
-    background-color: red;
+    background-color: #58ACFA;
 }
 
 .team.your-turn::before {
@@ -46,25 +58,29 @@
 }
 
 #alert-modal {
-    padding: 20%;
-    position absolute;
-    top: 30%;
-    left: 30%;
+    background-color: #E6E6E6;
+    padding: 20px;
     border: 3px solid green;
     border-radius: 4px;
+    width: 200px;
+    position: absolute;
+    top: 118px;
+    left: 40px;
+    text-align: center;
 }
 
 
 #game-board {
+    position: relative;
     border: 2px solid green;
     border-radius: 5px;
-    background-color: silver;
+    background-color: #E6E6E6;
     margin: 30px auto 0;
     width: 312px;
 }
 
 #event-log {
-    border: 1px solid silver;
+    border: 1px solid #E6E6E6;
     border-radius: 5px;
     list-style-type: none;
     height: 150px;
@@ -100,4 +116,29 @@
 #top-right,
 #middle-right {
     border-bottom: 2px solid black;
+}
+
+.footer {
+    background-color: #E6E6E6;
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.footer ul {
+    list-style-type: none;
+}
+
+.footer li {
+    display: inline-block;
+    padding: 10px 60px;
+}
+
+.footer a {
+    color: grey;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: black;
 }

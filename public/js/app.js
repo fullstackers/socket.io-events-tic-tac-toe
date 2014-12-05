@@ -15,14 +15,21 @@
 
     function showAlert(msg) {
         $('#alert-modal').html(msg).removeClass('hide');
+
+        setTimeout(hideAlert, 5000);
     }
 
     function hideAlert() {
-        $('#alert-modal').html(msg).addClass('hide');
+        $('#alert-modal').addClass('hide');
     }
 
     function logEvent(msg) {
         $('#event-log').prepend('<li>', msg);
+    }
+
+    function nextTurn(team) {
+        $('.team').removeClass('your-turn');
+        $('.team-'+team).addClass('your-turn');
     }
 
     socket.on('current game state', function(gameState) {
@@ -30,6 +37,7 @@
         $('.tile').each(function () { $(this).html(''); });
         setTeam(gameState.team.x, 'x');
         setTeam(gameState.team.o, 'o');
+        nextTurn(gameState.current_team_turn);
 
         for(var i in gameState.tiles) {
             if(gameState.tiles.hasOwnProperty(i) && gameState.tiles[i]) {
@@ -83,8 +91,7 @@
     });
 
     socket.on('current team turn', function (team) {
-        $('.team').removeClass('your-turn');
-        $('.team-'+team).addClass('your-turn');
+        nextTurn(team);
     });
 
     $(document).ready(function() {
