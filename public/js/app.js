@@ -13,6 +13,18 @@
         }
     }
 
+    function showAlert(msg) {
+        $('#alert-modal').html(msg).removeClass('hide');
+    }
+
+    function hideAlert() {
+        $('#alert-modal').html(msg).addClass('hide');
+    }
+
+    function logEvent(msg) {
+        $('#event-log').prepend('<li>', msg);
+    }
+
     socket.on('current game state', function(gameState) {
         console.log('connected!', gameState);
         $('.tile').each(function () { $(this).html(''); });
@@ -27,16 +39,20 @@
     });
 
     socket.on('spectator joined', function(spectator) {
-        $('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
+        //$('#event-log').prepend('<li>Specator <em>'+spectator+'</em> joined</li>');
+        logEvent('Spectator '+spectator+' joined');
     });
 
     socket.on('spectator left', function(spectator) {
-        $('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
+        //$('#event-log').append('<li>Specator <em>'+spectator+'</em> left</li>');
+        logEvent('Spectator '+spectator+' left');
     });
 
     socket.on('spectator can\'t play as team', function(team) {
-        console.log('you can\'t play as team', team);
-        $('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
+        //console.log('you can\'t play as team', team);
+        //$('#event-log').prepend('<li>There is already a player for team <em>'+team+'</em></li>');
+
+        logEvent('There is already a player for team '+team);
     });
 
     socket.on('spectator is playing as team', function(spectator, team) {
@@ -56,7 +72,7 @@
     });
 
     socket.on('spectator already playing for team', function (team) {
-      console.log('you are already playing on team %s', team); 
+      console.log('you are already playing on team %s', team);
     });
 
     socket.on('specator\'s team is out of turn', function () {
@@ -64,15 +80,18 @@
     });
 
     socket.on('team won', function (team) {
-      alert('team ' + team + ' won!');
+      logEvent('Winner!  Team '+team+' has won the game!');
+      showAlert('Team '+team+' has won!');
     });
 
     socket.on('draw game', function () {
-      alert('draw game!');
+      logEvent('The game has ended in a draw');
+      showAlert('Draw!');
     });
 
     socket.on('current team turn', function (team) {
-      alert('team ' + team + ' turn!');
+        $('.team').removeClass('your-turn');
+        $('.team-'+team).addClass('your-turn');
     });
 
     $(document).ready(function() {

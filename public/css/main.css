@@ -19,6 +19,15 @@
     padding: 4px;
 }
 
+.team.your-turn {
+    background-color: red;
+}
+
+.team.your-turn::before {
+    content: "Your Turn!";
+    color: #000;
+}
+
 .team-x {
     float: left;
 }
