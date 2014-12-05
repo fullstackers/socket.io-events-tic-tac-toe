@@ -41,6 +41,12 @@ game.cells = function () {
           this.tiles['bottom-left'], this.tiles['bottom-middle'], this.tiles['bottom-right']];
 };
 
+game.next = function () {
+  for (var k in this.tiles) this.tiles[k] = null;
+  this.current_team_turn = this.current_team_turn === 'x' ? 'o' : '';
+  return this;
+};
+
 game.winStates = function () {
 
   if (!this.winStates.states) {
@@ -285,9 +291,10 @@ router.on('player selects tile', function (sock, args, next) {
   console.log('cells', cells);
   console.log('winStates', winStates);
 
+  var wonStates = [];
   for (var k in winStates) {
     var winState = winStates[k]
-    var xwin = 0, owin = 0;
+    var xwin = 0, owin = 0, team = null;
     for (var j=0; j<winState.length; j++) {
       console.log('i %s, j %s %s', i, j, winState[j])
       if (cells[winState[j]] === 'x') {
@@ -297,6 +304,12 @@ router.on('player selects tile', function (sock, args, next) {
         owin++;
       }
     }
+
+    if (xwin === 3) team = 'x';
+    else if (owin ===3) team = 'o';
+
+    if (team) wonStates.push({team: team, selection: winState});
+    /*
     console.log('win state %j, x win %s o win %s', winState, xwin, owin);
     if (xwin === 3) {
       for (var k in game.tiles) game.tiles[k] = null;
@@ -312,21 +325,37 @@ router.on('player selects tile', function (sock, args, next) {
       io.emit('current game state', game);
       return;
     }
+    */
   }
 
-  /*
-   * and calculate a draw
-   */
+  if (wonStates.length) {
 
-  for (var i=0; i<cells.length; i++) {
-    if (cells[i] == null) {
-      return;
+    var selections = [], team = null;
+
+    for (var i=0; i<wonStates.length; i++) {
+      var wonState = wonStates[i];
+      if (!team) team = wonState[i];
+      selections.push(wonState.selection);
     }
-  }
 
-  for (var k in game.tiles) game.tiles[k] = null;
-  game.current_team_turn = 'x';
-  io.emit('draw game')
+    io.emit('team won', team, selections);
+  }
+  else {
+
+    /*
+     * and calculate a draw
+     */
+
+    for (var i=0; i<cells.length; i++) {
+      if (cells[i] == null) {
+        return;
+      }
+    }
+
+    io.emit('draw game')
+  }
+  
+  game.next();
   io.emit('current game state', game);
 
 });
