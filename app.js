@@ -206,6 +206,12 @@ router.on('spectator wants to play as team', function (sock, args) {
 
   io.emit('spectator is playing as team', sock.id, team);
 
+  /*
+   * send down the current teams turn and the actual team
+   */
+
+  sock.emit('current team turn', game.current_team_turn, game.team[game.current_team_turn]);
+
 });
 
 /*
