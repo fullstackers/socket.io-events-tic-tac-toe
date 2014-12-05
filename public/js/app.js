@@ -1,6 +1,7 @@
 (function() {
 
-    var socket = io();
+    var socket = io(),
+        mySocketId = null;
 
     function setTeam(spectator, team) {
 
@@ -27,9 +28,13 @@
         $('#event-log').prepend('<li>', msg);
     }
 
-    function nextTurn(team) {
+    function nextTurn(team, socketId) {
         $('.team').removeClass('your-turn');
         $('.team-'+team).addClass('your-turn');
+
+        if(socketId && socketId == mySocketId) {
+            $('.team-'+team).addClass('active');
+        }
     }
 
     socket.on('current game state', function(gameState) {
@@ -44,6 +49,10 @@
                  $('#'+i).html(gameState.tiles[i]);
             }
         }
+    });
+
+    socket.on('you are', function(socketId) {
+        mySocketId = socketId;
     });
 
     socket.on('spectator joined', function(spectator) {
@@ -90,8 +99,8 @@
       showAlert('Draw!');
     });
 
-    socket.on('current team turn', function (team) {
-        nextTurn(team);
+    socket.on('current team turn', function (team, socketId) {
+        nextTurn(team, socketId);
     });
 
     $(document).ready(function() {

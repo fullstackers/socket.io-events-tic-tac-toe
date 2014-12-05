@@ -40,7 +40,7 @@ ul {
     background-color: #58ACFA;
 }
 
-.team.your-turn::before {
+.team.your-turn.active::before {
     content: "Your Turn!";
     color: #000;
 }
