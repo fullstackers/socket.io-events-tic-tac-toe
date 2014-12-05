@@ -272,19 +272,6 @@ router.on('player selects tile', function (sock, args, next) {
   game.tiles[tile] = sock.sock.playing.team;
 
   /*
-   * and switch turns
-   */
-  /*
-
-  if (sock.sock.playing.team === 'x') {
-    game.current_team_turn = 'o';
-  }
-  else {
-    game.current_team_turn = 'x';
-  }
-  */
-
-  /*
    * and tell the sockets the spectator playing the team chose the tile
    */
 
@@ -364,7 +351,7 @@ router.on('player selects tile', function (sock, args, next) {
    * and tell the sockets of the current teams turn
    */
 
-  io.emit('current team turn', game.current_team_turn);
+  io.emit('current team turn', game.current_team_turn, game.team[game.current_team_turn]);
 
   /*
    * and tell the current game state
@@ -430,11 +417,17 @@ io.on('connection', function (sock) {
   });
 
   /*
+   * let the sock who they are
+   */
+
+  io.emit('you are', sock.id);
+
+  /*
    * let everyone know we a new spectator joined the game
    */
 
   io.emit('spectator joined', sock.id);
-
+  
   /*
    * give the current state of the game
    */
