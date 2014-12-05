@@ -420,7 +420,7 @@ io.on('connection', function (sock) {
    * let the sock who they are
    */
 
-  io.emit('you are', sock.id);
+  sock.emit('you are', sock.id);
 
   /*
    * let everyone know we a new spectator joined the game
